@@ -1,39 +1,39 @@
-double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2,
-                              int nums2Size) {
-    // Ensure nums1 is the smaller array
-    if (nums1Size > nums2Size) {
-        return findMedianSortedArrays(nums2, nums2Size, nums1, nums1Size);
-    }
-
-    int m = nums1Size, n = nums2Size;
-    int left = 0, right = m;
-
-    while (left <= right) {
-        int partitionA = (left + right) / 2;
-        int partitionB = (m + n + 1) / 2 - partitionA;
-
-        int maxLeftA = (partitionA == 0) ? INT_MIN : nums1[partitionA - 1];
-        int minRightA = (partitionA == m) ? INT_MAX : nums1[partitionA];
-        int maxLeftB = (partitionB == 0) ? INT_MIN : nums2[partitionB - 1];
-        int minRightB = (partitionB == n) ? INT_MAX : nums2[partitionB];
-
-        if (maxLeftA <= minRightB && maxLeftB <= minRightA) {
-            if ((m + n) % 2 == 0) {
-                return (max(maxLeftA, maxLeftB) + min(minRightA, minRightB)) /
-                       2.0;
-            } else {
-                return max(maxLeftA, maxLeftB);
-            }
-        } else if (maxLeftA > minRightB) {
-            right = partitionA - 1;
+double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Size) {
+    double res;
+    int mid;
+    int merged[nums1Size+nums2Size];
+    int i=0, j=0, k=0;
+    while((i < nums1Size) && (j < nums2Size)) {
+        if(nums1[i] < nums2[j]) {
+            merged[k] = nums1[i];
+            i++;
+            k++;
         } else {
-            left = partitionA + 1;
+            merged[k] = nums2[j];
+            j++;
+            k++;
+        }
+    }
+    if(i == nums1Size) {
+        while(j<nums2Size) {
+            merged[k]=nums2[j];
+            j++;
+            k++;
+        }
+    } else {
+        while(i<nums1Size) {
+            merged[k]=nums1[i];
+            i++;
+            k++;
         }
     }
 
-    return 0.0;  // control should never reach here
+    if(k%2 == 1) {
+        mid=merged[(nums1Size+nums2Size)/2];
+        res=(double)mid;
+        return(res);
+    } else {
+        res=((double)((merged[(nums1Size+nums2Size)/2])+(merged[((nums1Size+nums2Size)/2)-1])))/2;
+        return(res);
+    }
 }
-
-int max(int a, int b) { return (a > b) ? a : b; }
-
-int min(int a, int b) { return (a < b) ? a : b; }
